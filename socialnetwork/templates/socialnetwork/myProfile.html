@@ -1,0 +1,64 @@
+{% extends "socialnetwork/base.html" %}
+{% load static %}
+
+{% block user-info %}
+   <div class="sidenav">
+        <span id="id_logged_in_user_name">{{user.first_name}} {{ user.last_name }}</span>
+        <a href="{% url 'logout' %}">
+            Logout
+        </a>
+        <div class="dropdown">
+        <button id="id_show_nav_button">&darr;</button>
+        <div class="dropdown-content">
+        <a id= "id_nav_global_stream" href="http://54.152.121.169/">Global Stream</a>
+        <a id= "id_nav_follower_stream" href="{% url 'follow' %}">Follower Stream</a>
+        <a id= "id_nav_profile" href="{% url 'mine' user.id%}">My Profile</a>
+        <a id= "id_nav_logout" href="http://54.152.121.169/accounts/login/">Logout</a>
+        </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <span id="id_name_of_page">
+    <h2>Profile Page for {{user.first_name}} {{user.last_name}}</h2>
+    </span>
+
+<form enctype="multipart/form-data" action="{% url 'mine' user.id %}" method="post" class="update_profile">
+<div>
+    {% if profile.profile_picture %}
+         <img id = "id_user_picture" src="{% url 'photo' profile.user_id %}" height="200px" width="200px" alt="user_{{user.id}}">
+    {% else %}
+         <img id = "id_user_picture" src="{% static 'socialnetwork/cat.jpg' %}" height="200px" width="200px" alt="user_{{user.id}}">
+    {% endif %}
+
+</div>
+<table>
+    {% for field in form.visible_fields %}
+        <tr>
+            <td>Profile Picture: </td>
+            <td>{{field}}</td>
+            <td class="error">
+                {% for error in field.errors %} {{error}} {% endfor %}
+            </td>
+        </tr>
+    {% endfor %}
+    <tr><td ><input id="id_update_profile_button" type="submit" value="Submit"></td></tr>
+</table >
+<div class="my_user_bio">
+    {% if profile.userBio %}
+        <textarea name="bio_text" id="id_bio_input_text" contenteditable="true" rows = "5" cols = "50" maxlength = "100" style="resize:none;width:480px;height:200px;">{{ profile.userBio }}</textarea>
+    {% else %}
+        <textarea name="bio_text" id="id_bio_input_text" rows = "5" cols = "50" maxlength = "100" style="resize:none;width:480px;height:200px;">Please set your bio.</textarea>
+    {% endif %}
+    {% csrf_token %}
+</div>
+</form>
+
+    <div class="following-list">
+        <p> You are following:<p>
+    {% for followed in profile.following.all %}
+        <li> <a id = "id_profile_link_{{ followed.username }}" href="{% url 'mine' followed.id %}"> {{ followed }}</a></li>
+    {% endfor %}
+    </div>
+{% endblock %}

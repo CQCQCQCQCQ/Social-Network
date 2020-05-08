@@ -1,0 +1,65 @@
+{% extends "socialnetwork/base.html" %}
+
+{% block user-info %}
+    {% load static %}
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous"></script>
+    <script src="{% static 'socialnetwork/refresh_follower_stream.js' %}" type="text/javascript"></script>
+    <div class="sidenav">
+        <span id="id_logged_in_user_name">{{user.first_name}} {{user.last_name}}</span>
+        <a href="{% url 'logout' %}">
+            Logout
+        </a>
+        <div class="dropdown">
+        <button id="id_show_nav_button">&darr;</button>
+        <div class="dropdown-content">
+        <a id= "id_nav_global_stream" href="http://54.152.121.169/">Global Stream</a>
+        <a id= "id_nav_follower_stream" href="{% url 'follow' %}">Follower Stream</a>
+        <a id= "id_nav_profile" href="{% url 'mine' user.id%}">My Profile</a>
+        <a id= "id_nav_logout" href="http://54.152.121.169/accounts/login/">Logout</a>
+        </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <span id="id_name_of_page">
+    <h2>Follower Stream</h2>
+    </span>
+    <table id="post_block">
+    {% for post in posts %}
+    <tr>
+        <td><i><span>Post by  </span><a id="id_post_profile_{{ post.id }}" href="{% url 'mine' post.poster_id%}">{{post.poster}}</a>: </i>
+            <span id="id_post_text_{{post.id}}">{{post.post_input_text}}</span> <span id="id_post_date_time_{{ post.id }}"><i>-- {{ post.date|date:"n/d/Y, h:i:s A" }}</i></span></td>
+            <input type = "hidden" class="ref_hidden_time" value = {{post.date|date:"c"}}>
+    <tr class="comment_content">
+        <td colspan="3">
+            <p><span>Comment:  </span><label for="id_comment_input_text_{{ post.id }}"></label><input id="id_comment_input_text_{{ post.id }}" class="post_comment">
+                <button type="submit" class="comment_button" id="id_comment_button_{{ post.id }}" onclick="addComment({{ post.id }})">Submit</button></p>
+            <ol id="id_comment_list_{{post.id}}">
+                {% for comment in comments %}
+                    {% if comment.post_id == post.id %}
+                    <div class="comment">
+                        <p>
+                            <i>
+                                Comment by:&nbsp
+                                <a id="id_comment_profile_{{ comment.id }}" href="{% url 'mine' comment.user_id%}">  {{comment.user_name}}</a>
+                            </i>
+                            <span id="id_comment_text_{{ comment.id }}">&nbsp{{comment.comment_text}}</span>
+                            <span id="id_comment_date_time_{{ comment.id }}">
+                                <i>
+                                    -- {{comment.comment_date_time|date:"n/d/Y, h:i:s A"}}
+                                </i>
+                            </span>
+                        </p>
+                    </div>
+                    <input type = "hidden" class="ref_hidden_time" value = {{comment.comment_date_time|date:"c"}}>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+        </td>
+    </tr>
+    {% endfor %}
+    </table>
+{% endblock %}
