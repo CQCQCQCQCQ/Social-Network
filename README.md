@@ -1,4 +1,4 @@
-Social Netword Project from course Web Application.
+Social Netword Project from course Web Application
 ===
 
 >using django frame work, and also use AJAX to update post and comment every 5 second.
